@@ -21,9 +21,7 @@ namespace GestioneSpeseAdo.ConsoleApp
                 deleteCommand.CommandType = System.Data.CommandType.Text;
                 deleteCommand.CommandText = "DELETE FROM Spese WHERE ID = @id";
 
-                Console.WriteLine();
-                Console.Write("ID della spesa da cancellare: ");
-                string idValue = Console.ReadLine();
+                int idValue = CheckIdSpesa("eliminare");
 
                 deleteCommand.Parameters.AddWithValue("@id", idValue);
 
@@ -44,6 +42,32 @@ namespace GestioneSpeseAdo.ConsoleApp
                 Console.WriteLine("---- Premi un tasto ----");
                 Console.ReadKey();
             }
+        }
+
+        private static int CheckIdSpesa(string operation)
+        {
+            Console.WriteLine("---------- Lista delle spese ----------.");
+            int idValue;
+            var choice = false;
+            (List<int> idList, List<string> idNomi) = DisconnectedMode.FetchAllSpese();
+
+            Console.WriteLine("\nDigita l'Id della spesa da " + operation);
+
+            while (!(choice = int.TryParse(Console.ReadLine(), out idValue)) || (idList.Contains(idValue) == false))
+            {
+                if (choice == false)
+                    Console.WriteLine("Inserisci un id numerico!");
+                else
+                {
+                    if (idList.Contains(idValue) == false)
+                    {
+                        Console.WriteLine("L'id selezionato non esiste.");
+                    }
+                    else
+                        break;
+                }
+            }
+            return idValue;
         }
 
         internal static void TotSpeseByCategory()
@@ -99,9 +123,8 @@ namespace GestioneSpeseAdo.ConsoleApp
                 else
                     Console.WriteLine("Non connessi al DB.");
 
-                string nome;
                 Console.WriteLine("Inserisci Nome dell'utente di cui si vogliono visualizzare le spese");
-                nome = Console.ReadLine();
+                string nome = CheckNomeUser();
 
                 string query = "select * from spese s where s.Utente = " + "'" + nome + "'";
 
@@ -132,6 +155,24 @@ namespace GestioneSpeseAdo.ConsoleApp
                 Console.WriteLine("Connessione chiusa");
             }
         }
+
+        private static string CheckNomeUser()
+        {
+            Console.WriteLine("---------- Lista delle spese ----------.");
+            string nome;
+            (List<int> idList, List<string> nomiList) = DisconnectedMode.FetchAllSpese();
+
+            Console.WriteLine("\nDigita nome utente.");
+            nome = Console.ReadLine();
+
+            while (nomiList.Contains(nome) == false)
+            {
+                Console.WriteLine("\nDigita un nome presente nella lista.");
+                nome = Console.ReadLine();
+            }
+            return nome;
+        }
+
 
         internal static void ShowSpeseApproved()
         {
@@ -187,27 +228,8 @@ namespace GestioneSpeseAdo.ConsoleApp
 
                 Console.WriteLine();
 
-                Console.WriteLine("---------- Lista delle spese ----------.");
-                int idValue;
-                var choice = false;
-                List<int> idList = DisconnectedMode.FetchAllSpese();
-
                 Console.WriteLine("\nDigita l'Id della spesa da approvare.");
-
-                while (!(choice = int.TryParse(Console.ReadLine(), out idValue)) || (idList.Contains(idValue) == false))
-                {
-                    if (choice == false)
-                        Console.WriteLine("Inserisci un id numerico!");
-                    else
-                    {
-                        if (idList.Contains(idValue) == false)
-                        {
-                            Console.WriteLine("L'id selezionato non esiste.");
-                        }
-                        else
-                            break;
-                    }
-                }
+                int idValue = CheckIdSpesa("approvare");
 
                 updateCommand.Parameters.AddWithValue("@id", idValue);
 

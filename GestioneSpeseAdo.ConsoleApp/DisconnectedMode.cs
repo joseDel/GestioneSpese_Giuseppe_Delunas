@@ -161,10 +161,11 @@ namespace GestioneSpeseAdo.ConsoleApp
             return cmd;
         }
 
-        internal static List<int> FetchAllSpese()
+        internal static (List<int>, List<string>) FetchAllSpese()
         {
             DataSet dataset = new DataSet();
             List<int> idList = new List<int>();
+            List<string> nomiList = new List<string>();
             using SqlConnection connessione = new SqlConnection(connectionStringSQL);
 
             try
@@ -186,18 +187,19 @@ namespace GestioneSpeseAdo.ConsoleApp
                 {
                     Console.WriteLine($"{row["ID"]} - {row["Descrizione"]} - {row["Utente"]} - {row["Importo"]}");
                     idList.Add((int)row["ID"]);
+                    nomiList.Add((string)row["Utente"]);
                 }
-                return idList;
+                return (idList, nomiList);
             }
             catch (SqlException sqlEx)
             {
                 Console.WriteLine(sqlEx.Message);
-                return null;
+                return (idList, nomiList);
             }
             catch (Exception ex)
             {
                 Console.WriteLine($"Errore: {ex.Message}");
-                return null;
+                return (idList, nomiList);
             }
             finally
             {
