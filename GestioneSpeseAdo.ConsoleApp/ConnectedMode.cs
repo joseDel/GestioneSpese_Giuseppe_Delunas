@@ -189,13 +189,14 @@ namespace GestioneSpeseAdo.ConsoleApp
 
                 Console.WriteLine("---------- Lista delle spese ----------.");
                 int idValue;
+                var choice = false;
                 List<int> idList = DisconnectedMode.FetchAllSpese();
 
                 Console.WriteLine("\nDigita l'Id della spesa da approvare.");
 
-                while (!int.TryParse(Console.ReadLine(), out idValue) || (idList.Contains(idValue) == false))
+                while (!(choice = int.TryParse(Console.ReadLine(), out idValue)) || (idList.Contains(idValue) == false))
                 {
-                    if ((idValue is int) == false)
+                    if (choice == false)
                         Console.WriteLine("Inserisci un id numerico!");
                     else
                     {
